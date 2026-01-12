@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyManager | Invoices</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+
+    <!-- 🔐 PROTECTION LOGIN -->
+    <script>
+      if (!localStorage.getItem("isLoggedIn")) {
+        window.location.replace("login.html");
+      }
+    </script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        min-height: 100vh;
+        background: #f4f4f4;
+      }
+      .container {
+        display: flex;
+        width: 100%;
+      }
+      aside {
+        width: 220px;
+        background: #2c3e50;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      aside .logo {
+        text-align: center;
+        padding: 20px 0;
+        font-size: 1.5em;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      aside .sidebar {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      aside .sidebar a {
+        padding: 15px 20px;
+        text-decoration: none;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: background 0.2s;
+        font-weight: 500;
+      }
+      aside .sidebar a:hover,
+      aside .sidebar a.active {
+        background: #34495e;
+      }
+      main {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+      }
+      table th,
+      table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+      table th {
+        background: #3498db;
+        color: white;
+      }
+      .form-container {
+        margin-bottom: 20px;
+      }
+      .form-container input,
+      .form-container select {
+        padding: 5px 10px;
+        margin-right: 10px;
+      }
+      .dark-mode {
+        background: #121212 !important;
+        color: #f0f0f0 !important;
+      }
+      .dark-mode aside {
+        background: #1e1e1e !important;
+      }
+      .dark-mode aside .sidebar a:hover,
+      .dark-mode aside .sidebar a.active {
+        background: #333 !important;
+      }
+      .dark-mode main {
+        background: #1a1a1a !important;
+        color: #f0f0f0 !important;
+      }
+      .dark-mode table th {
+        background: #333 !important;
+      }
+      .dark-mode table td,
+      .dark-mode table th {
+        border-color: #555 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="darkModeBtn">🌙</button>
+
+    <div class="container">
+      <!-- Sidebar -->
+      <aside>
+        <div class="top">
+          <div class="logo">
+            B<span style="color: #2980b9">BACKOFFICE</span>
+          </div>
+        </div>
+        <div class="sidebar">
+          <a href="index.html"><span>🏠</span> Dashboard</a>
+          <a href="users.html"><span>👥</span> Users</a>
+          <a href="products.html"><span>🛒</span> Products</a>
+          <a href="stats.html"><span>📊</span> Statistics</a>
+          <a href="clients.html"><span>👤</span> Clients</a>
+          <a href="orders.html"><span>📝</span> Orders</a>
+          <a href="invoice.html"><span>📄</span> Invoices</a>
+
+          <a href="#" class="logout" onclick="logout()">🚪 Logout</a>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <main>
+        <h1>Invoices</h1>
+
+        <!-- Create Invoice Form -->
+        <div class="form-container">
+          <input
+            type="text"
+            id="invoiceClient"
+            placeholder="Client Name"
+            required
+          />
+          <input
+            type="number"
+            id="invoiceAmount"
+            placeholder="Amount"
+            min="0"
+            required
+          />
+          <input type="date" id="invoiceDate" required />
+          <select id="invoiceStatus">
+            <option value="Pending">Pending</option>
+            <option value="Paid">Paid</option>
+            <option value="Overdue">Overdue</option>
+          </select>
+          <button id="addInvoiceBtn">Add Invoice</button>
+        </div>
+
+        <!-- Invoices Table -->
+        <table border="1">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Client</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invoicesTable"></tbody>
+        </table>
+      </main>
+    </div>
+
+    <script src="invoice.js"></script>
+    <script>
+      // DARK MODE
+      const darkModeBtn = document.getElementById("darkModeBtn");
+      function updateDarkIcon() {
+        darkModeBtn.textContent = document.body.classList.contains("dark-mode")
+          ? "☀️"
+          : "🌙";
+      }
+      darkModeBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem(
+          "darkMode",
+          document.body.classList.contains("dark-mode")
+        );
+        updateDarkIcon();
+      });
+      if (localStorage.getItem("darkMode") === "true")
+        document.body.classList.add("dark-mode");
+      updateDarkIcon();
+
+      function logout() {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("username");
+        window.location.replace("login.html");
+      }
+    </script>
+  </body>
+</html>

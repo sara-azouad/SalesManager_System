@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyManager | Admin Backoffice</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+
+    <!-- 🔐 PROTECTION LOGIN -->
+    <script>
+      const isLoggedIn = localStorage.getItem("isLoggedIn");
+      if (!isLoggedIn || isLoggedIn !== "true") {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("username");
+        window.location.replace("login.html");
+      }
+    </script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        min-height: 100vh;
+        background: #f4f4f4;
+      }
+      .container {
+        display: flex;
+        width: 100%;
+      }
+      aside {
+        width: 220px;
+        background: #2c3e50;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      aside .logo {
+        text-align: center;
+        padding: 20px 0;
+        font-size: 1.5em;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      aside .sidebar {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      aside .sidebar a {
+        padding: 15px 20px;
+        text-decoration: none;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: background 0.2s;
+        font-weight: 500;
+      }
+      aside .sidebar a:hover,
+      aside .sidebar a.active {
+        background: #34495e;
+      }
+      main {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+      }
+      .right {
+        width: 250px;
+        padding: 20px;
+        background: #ecf0f1;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+      }
+      table th,
+      table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+      table th {
+        background: #3498db;
+        color: white;
+      }
+      h1,
+      h2 {
+        margin-bottom: 10px;
+      }
+
+      /* 🔝 NAVBAR TOP */
+      #topControls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px 20px;
+        background: #ecf0f1;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      #topControls h1 {
+        margin: 0;
+      }
+      .controls-right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .control-btn {
+        padding: 8px 15px;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s;
+      }
+      .control-btn:hover {
+        background: #2980b9;
+      }
+      #languageSwitcher {
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        background: white;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      #darkModeBtn {
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        background: white;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      /* 🌙 DARK MODE STYLES */
+      .dark-mode {
+        background: #121212 !important;
+        color: #f0f0f0 !important;
+      }
+      .dark-mode aside {
+        background: #1e1e1e !important;
+      }
+      .dark-mode aside .sidebar a:hover,
+      .dark-mode aside .sidebar a.active {
+        background: #333 !important;
+      }
+      .dark-mode main {
+        background: #1a1a1a !important;
+        color: #f0f0f0 !important;
+      }
+      .dark-mode .right {
+        background: #1a1a1a !important;
+        color: #f0f0f0 !important;
+      }
+      .dark-mode table th {
+        background: #333 !important;
+        color: #f0f0f0 !important;
+      }
+      .dark-mode table td,
+      .dark-mode table th {
+        border-color: #555 !important;
+      }
+      .dark-mode #topControls {
+        background: #333 !important;
+        color: #f0f0f0 !important;
+      }
+      .dark-mode .control-btn {
+        background: #555 !important;
+        color: #f0f0f0 !important;
+        border-color: #666 !important;
+      }
+      .dark-mode #languageSwitcher,
+      .dark-mode #darkModeBtn {
+        background: #444 !important;
+        color: #f0f0f0 !important;
+        border-color: #666 !important;
+      }
+      .dark-mode #languageSwitcher option {
+        background: #333 !important;
+        color: #f0f0f0 !important;
+      }
+
+      /* 📱 RESPONSIVE */
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+        }
+        aside {
+          width: 100%;
+          min-height: auto;
+        }
+        .right {
+          width: 100%;
+        }
+        #topControls {
+          flex-direction: column;
+          gap: 15px;
+          text-align: center;
+        }
+        .controls-right {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- SIDEBAR -->
+      <aside>
+        <div class="top">
+          <div class="logo">
+            B<span style="color: #2980b9">BACKOFFICE</span>
+          </div>
+        </div>
+        <div class="sidebar">
+          <a href="index.html" class="active"
+            ><span>🏠</span> <span data-i18n="dashboard">Dashboard</span></a
+          >
+          <a href="users.html"
+            ><span>👥</span> <span data-i18n="users">Users</span></a
+          >
+          <a href="products.html"
+            ><span>🛒</span> <span data-i18n="products">Products</span></a
+          >
+          <a href="stats.html"
+            ><span>📊</span> <span data-i18n="statistics">Statistics</span></a
+          >
+          <a href="clients.html"
+            ><span>👤</span> <span data-i18n="clients">Clients</span></a
+          >
+          <a href="orders.html"
+            ><span>📝</span> <span data-i18n="orders">Orders</span></a
+          >
+          <a href="invoice.html"
+            ><span>📄</span> <span data-i18n="invoices">Invoices</span></a
+          >
+          <a href="#" class="logout" onclick="logout()"
+            ><span>🚪</span> <span data-i18n="logout">Logout</span></a
+          >
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main>
+        <!-- 🔝 NAVBAR TOP -->
+        <div id="topControls">
+          <h1 data-i18n="dashboard">Dashboard</h1>
+          <div class="controls-right">
+            <!-- 🌐 Language Selector -->
+            <select id="languageSwitcher">
+              <option value="fr">🇫🇷 Français</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="ar">🇸🇦 العربية</option>
+            </select>
+
+            <!-- 🌙 Dark Mode -->
+            <button id="darkModeBtn">🌙</button>
+          </div>
+        </div>
+
+        <!-- USERS TABLE -->
+        <h2 data-i18n="users">Users</h2>
+        <table border="1">
+          <thead>
+            <tr>
+              <th data-i18n="id">ID</th>
+              <th data-i18n="name">Name</th>
+              <th data-i18n="email">Email</th>
+              <th data-i18n="company">Company</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+
+        <!-- LATEST POSTS -->
+        <h2 data-i18n="latestPosts">Latest Posts</h2>
+        <div id="posts"></div>
+      </main>
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="right">
+        <h2 data-i18n="products">Products</h2>
+        <ul id="products"></ul>
+      </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="i18n.js"></script>
+    <script src="dashboard.js"></script>
+    <script>
+      // DARK MODE
+      const darkModeBtn = document.getElementById("darkModeBtn");
+
+      function updateDarkIcon() {
+        darkModeBtn.textContent = document.body.classList.contains("dark-mode")
+          ? "☀️"
+          : "🌙";
+      }
+
+      darkModeBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem(
+          "darkMode",
+          document.body.classList.contains("dark-mode")
+        );
+        updateDarkIcon();
+      });
+
+      if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+      }
+      updateDarkIcon();
+
+      // REFRESH DASHBOARD
+      function refreshDashboard() {
+        location.reload();
+      }
+
+      // LOGOUT
+      function logout() {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("username");
+        window.location.replace("login.html");
+      }
+
+      // INIT LANGUAGE SELECTOR
+      document.addEventListener("DOMContentLoaded", function () {
+        const langSelect = document.getElementById("languageSwitcher");
+        const savedLang = localStorage.getItem("language") || "en";
+
+        if (langSelect) {
+          langSelect.value = savedLang;
+          langSelect.addEventListener("change", function (e) {
+            localStorage.setItem("language", e.target.value);
+            window.location.reload();
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

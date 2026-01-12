@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Statistics | MyManager</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* ===== Reset & Fonts ===== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        display: flex;
+        min-height: 100vh;
+        background: #f4f6f8;
+      }
+
+      /* ===== Main content ===== */
+      main {
+        flex: 1;
+        padding: 30px;
+      }
+      main h1 {
+        margin-bottom: 25px;
+        color: #34495e;
+      }
+
+      /* ===== KPI Cards ===== */
+      .kpi-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      .kpi-card {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        padding: 25px 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+      }
+      .kpi-card:hover {
+        transform: translateY(-5px);
+      }
+      .kpi-card h3 {
+        font-size: 1.1em;
+        margin-bottom: 10px;
+      }
+      .kpi-card p {
+        font-size: 2em;
+        font-weight: 700;
+      }
+
+      /* ===== Chart Container ===== */
+      .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+      }
+      .chart-card {
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        height: 100%;
+      }
+      .chart-card h3 {
+        margin-bottom: 15px;
+        color: #34495e;
+        font-size: 1.2em;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+      }
+      .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+      }
+
+      /* ===== Responsive ===== */
+      @media (max-width: 768px) {
+        main {
+          padding: 20px;
+        }
+        .kpi-cards {
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        }
+        .charts-grid {
+          grid-template-columns: 1fr;
+        }
+        .chart-container {
+          height: 250px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Main content -->
+    <main>
+      <h1>📊 Statistics Dashboard</h1>
+
+      <!-- KPI Cards -->
+      <div class="kpi-cards">
+        <div class="kpi-card">
+          <h3>Total Users</h3>
+          <p id="totalUsers">0</p>
+        </div>
+        <div class="kpi-card">
+          <h3>Total Products</h3>
+          <p id="totalProducts">0</p>
+        </div>
+        <div class="kpi-card">
+          <h3>Total Orders</h3>
+          <p id="totalOrders">0</p>
+        </div>
+        <div class="kpi-card">
+          <h3>Total Revenue</h3>
+          <p id="totalRevenue">$0</p>
+        </div>
+      </div>
+
+      <!-- Charts Grid - 5 GRAPHIQUES -->
+      <div class="charts-grid">
+        <!-- 1. Pie Chart (Users per Company) -->
+        <div class="chart-card">
+          <h3>👥 Users per Company</h3>
+          <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 2. Bar Chart (Product Prices) -->
+        <div class="chart-card">
+          <h3>💰 Product Prices</h3>
+          <div class="chart-container">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 3. Line Chart (Monthly Sales) -->
+        <div class="chart-card">
+          <h3>📈 Monthly Sales Trend</h3>
+          <div class="chart-container">
+            <canvas id="lineChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 4. Donut Chart (Orders Status) -->
+        <div class="chart-card">
+          <h3>🔄 Orders Status Distribution</h3>
+          <div class="chart-container">
+            <canvas id="donutChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 5. Scatter Plot (Price vs Quantity) -->
+        <div class="chart-card">
+          <h3>📊 Price vs Quantity Analysis</h3>
+          <div class="chart-container">
+            <canvas id="scatterChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Fonctions utilitaires
+      function updateKPI(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      }
+
+      // 1. Pie Chart
+      function renderPieChart() {
+        const ctx = document.getElementById("pieChart").getContext("2d");
+        new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: [
+              "MyCompany Inc",
+              "Client Corp",
+              "Another Corp",
+              "Supplier Ltd",
+              "Startup XYZ",
+            ],
+            datasets: [
+              {
+                data: [45, 25, 15, 10, 5],
+                backgroundColor: [
+                  "#3498db",
+                  "#2ecc71",
+                  "#e74c3c",
+                  "#f39c12",
+                  "#9b59b6",
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "right" },
+            },
+          },
+        });
+      }
+
+      // 2. Bar Chart
+      function renderBarChart() {
+        const ctx = document.getElementById("barChart").getContext("2d");
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: [
+              "Laptop Pro",
+              "Phone Max",
+              "Headphones",
+              "Monitor 4K",
+              "Keyboard",
+              "Mouse",
+            ],
+            datasets: [
+              {
+                label: "Price ($)",
+                data: [1299, 899, 199, 499, 79, 49],
+                backgroundColor: "#3498db",
+                borderColor: "#2980b9",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Price in USD",
+                },
+              },
+            },
+          },
+        });
+      }
+
+      // 3. Line Chart
+      function renderLineChart() {
+        const ctx = document.getElementById("lineChart").getContext("2d");
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+            datasets: [
+              {
+                label: "Sales Revenue",
+                data: [65000, 59000, 80000, 81000, 56000, 75000, 92000],
+                borderColor: "#2ecc71",
+                backgroundColor: "rgba(46, 204, 113, 0.1)",
+                fill: true,
+                tension: 0.3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Revenue ($)",
+                },
+              },
+            },
+          },
+        });
+      }
+
+      // 4. Donut Chart
+      function renderDonutChart() {
+        const ctx = document.getElementById("donutChart").getContext("2d");
+        new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: [
+              "Pending",
+              "Processing",
+              "Shipped",
+              "Delivered",
+              "Cancelled",
+            ],
+            datasets: [
+              {
+                data: [12, 8, 25, 40, 5],
+                backgroundColor: [
+                  "#f39c12",
+                  "#3498db",
+                  "#9b59b6",
+                  "#2ecc71",
+                  "#e74c3c",
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "right" },
+            },
+            cutout: "60%",
+          },
+        });
+      }
+
+      // 5. Scatter Plot
+      function renderScatterChart() {
+        const ctx = document.getElementById("scatterChart").getContext("2d");
+        new Chart(ctx, {
+          type: "scatter",
+          data: {
+            datasets: [
+              {
+                label: "Products",
+                data: [
+                  { x: 50, y: 200 },
+                  { x: 100, y: 150 },
+                  { x: 200, y: 100 },
+                  { x: 300, y: 80 },
+                  { x: 500, y: 50 },
+                  { x: 800, y: 30 },
+                  { x: 1200, y: 15 },
+                ],
+                backgroundColor: "#e74c3c",
+                pointRadius: 8,
+                pointHoverRadius: 12,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Price ($)",
+                },
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "Quantity Sold",
+                },
+              },
+            },
+          },
+        });
+      }
+
+      // Charger les données et initialiser les graphiques
+      async function loadStats() {
+        try {
+          // Simuler des données d'API
+          const mockData = {
+            users: 42,
+            products: 28,
+            orders: 90,
+            revenue: 125000,
+          };
+
+          // Mettre à jour les KPIs
+          updateKPI("totalUsers", mockData.users);
+          updateKPI("totalProducts", mockData.products);
+          updateKPI("totalOrders", mockData.orders);
+          updateKPI("totalRevenue", `$${mockData.revenue.toLocaleString()}`);
+
+          // Rendre les 5 graphiques
+          renderPieChart();
+          renderBarChart();
+          renderLineChart();
+          renderDonutChart();
+          renderScatterChart();
+        } catch (error) {
+          console.error("Error loading stats:", error);
+        }
+      }
+
+      // Initialiser au chargement de la page
+      document.addEventListener("DOMContentLoaded", loadStats);
+    </script>
+  </body>
+</html>
