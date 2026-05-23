@@ -1,4 +1,4 @@
-##SalesManager System
+SalesManager System
 
 ## Description
 Adminora is a full-stack admin dashboard designed for managing an online shop. It allows administrators to control products, users, orders, invoices, and view real-time statistics through a clean and interactive interface.
